@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dar Chouafa — Texte et questions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&family=Noto+Naskh+Arabic:wght@500;700&display=swap">
+<style>
+/* Layout : une colonne de lecture large, pensée pour un écran de télévision (HDMI) — texte puis questions, corrections repliées */
+:root {
+  --bg: #FFFFFF;
+  --ink: #10262D;
+  --muted: #4B5F66;
+  --panel: #EDF4F5;
+  --line: #C9DADD;
+  --teal: #0C6A70;
+  --ochre: #B57A12;
+  --answer-bg: #FFF6E3;
+  --answer-ink: #3A2A05;
+  --font-text: "Literata", Georgia, "Times New Roman", serif;
+  --font-ui: "Atkinson Hyperlegible", Verdana, Arial, sans-serif;
+  --scale: 1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1E23; --ink: #F2F7F8; --muted: #B4C6CB; --panel: #17323A; --line: #2B4C55;
+    --teal: #5CC6CC; --ochre: #F0B544; --answer-bg: #2A2312; --answer-ink: #FFF1D2; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1E23; --ink: #F2F7F8; --muted: #B4C6CB; --panel: #17323A; --line: #2B4C55;
+  --teal: #5CC6CC; --ochre: #F0B544; --answer-bg: #2A2312; --answer-ink: #FFF1D2; color-scheme: dark;
+}
+
+html { font-size: calc(clamp(20px, 1.45vw, 30px) * var(--scale)); }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-ui); font-size: 1rem; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 50em; margin: 0 auto; padding-block: 1.5rem 4rem; display: grid; gap: 2.5rem; }
+
+/* barre d'outils */
+.toolbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); border-bottom: 2px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; justify-content: space-between;
+  padding-block: .6rem;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.toolbar .who { font-size: .8rem; color: var(--muted); }
+.tools { display: flex; flex-wrap: wrap; gap: .5rem; }
+button {
+  font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer;
+  background: var(--panel); color: var(--ink); border: 2px solid var(--line);
+  border-radius: .5rem; padding: .35rem .8rem;
+}
+button:hover { border-color: var(--teal); }
+button:focus-visible, summary:focus-visible { outline: 3px solid var(--ochre); outline-offset: 3px; }
+
+header { display: grid; gap: .3rem; }
+.eyebrow { font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--teal); }
+h1 { font-family: var(--font-text); font-size: 2.3rem; line-height: 1.15; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--font-text); font-size: 1.7rem; margin: 0 0 1rem; color: var(--teal); }
+
+/* texte */
+.texte {
+  font-family: var(--font-text); font-size: 1.15rem; line-height: 1.85;
+  background: var(--panel); border-radius: .8rem; padding: 1.4rem 1.6rem;
+}
+.texte p { margin: 0 0 1em; text-indent: 1.5em; }
+.texte p:last-child { margin-bottom: 0; }
+.texte .ln { font-family: var(--font-ui); font-size: .65rem; color: var(--muted); float: left; margin-left: -1.2rem; text-indent: 0; }
+
+/* questions */
+ol.qs { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.6rem; }
+.q { display: grid; grid-template-columns: 2.4rem 1fr; gap: .8rem; padding-bottom: 1.6rem; border-bottom: 1px solid var(--line); }
+.q:last-child { border-bottom: 0; }
+.num {
+  width: 2.2rem; height: 2.2rem; border-radius: 50%; background: var(--teal); color: var(--bg);
+  display: grid; place-items: center; font-weight: 700;
+}
+.q > div { min-width: 0; }
+.enonce { font-size: 1.1rem; font-weight: 700; margin: 0 0 .5rem; }
+.pts { font-weight: 400; color: var(--muted); }
+.sub { margin: .2rem 0; padding-left: 1rem; }
+.cite { font-family: var(--font-text); font-style: italic; }
+
+details { margin-top: .7rem; }
+summary {
+  cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .85rem; font-weight: 700; color: var(--ochre);
+  border: 2px dashed var(--ochre); border-radius: .5rem; padding: .3rem .8rem;
+}
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "▸"; transition: transform .2s; }
+details[open] summary::before { transform: rotate(90deg); }
+details[open] summary { border-style: solid; }
+.rep {
+  margin-top: .7rem; background: var(--answer-bg); color: var(--answer-ink);
+  border-radius: .6rem; padding: .9rem 1.2rem; font-size: 1.05rem;
+}
+.rep p { margin: .25rem 0; }
+.rep ul { margin: .25rem 0; padding-left: 1.3rem; }
+.rep strong { color: var(--answer-ink); }
+table.fiche { border-collapse: collapse; width: 100%; }
+table.fiche td { padding: .3rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.fiche td:first-child { font-weight: 700; white-space: nowrap; width: 1%; }
+.vf { display: inline-block; min-width: 3.4em; font-weight: 700; }
+
+/* mots difficiles */
+.astuce { font-size: .85rem; color: var(--muted); margin: -.4rem 0 .9rem; }
+.astuce b { color: var(--teal); }
+button.mot {
+  font: inherit; font-size: inherit; line-height: inherit; color: inherit;
+  background: none; border: 0; border-radius: .2rem; padding: 0; margin: 0; cursor: pointer;
+  text-decoration: underline dotted var(--teal); text-decoration-thickness: 3px; text-underline-offset: .22em;
+}
+button.mot:hover, button.mot.actif { background: var(--answer-bg); color: var(--answer-ink); text-decoration-style: solid; }
+.bulle {
+  position: absolute; z-index: 20; max-width: min(24em, calc(100vw - 32px));
+  background: var(--bg); color: var(--ink); border: 3px solid var(--teal); border-radius: .7rem;
+  padding: .8rem 1rem; box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.25); font-size: 1rem; line-height: 1.45;
+}
+.bulle .terme { font-family: var(--font-text); font-weight: 700; font-size: 1.15rem; color: var(--teal); }
+.bulle .def { margin: .3rem 0 0; }
+.bulle .ar {
+  margin: .5rem 0 0; padding-top: .5rem; border-top: 1px solid var(--line);
+  font-family: "Noto Naskh Arabic", "Traditional Arabic", "Arial", serif; font-size: 1.3rem; font-weight: 700; color: var(--ochre);
+}
+
+@media (max-width: 600px) {
+  .q { grid-template-columns: 1fr; }
+  .texte { padding: 1rem; }
+  .texte .ln { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { summary::before { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="toolbar">
+    <span class="who">Prof Alaoui Mohamed · 1re Bac</span>
+    <div class="tools">
+      <button id="moins" type="button" aria-label="Réduire le texte">A−</button>
+      <button id="plus" type="button" aria-label="Agrandir le texte">A+</button>
+      <button id="toutes" type="button">Afficher toutes les corrections</button>
+    </div>
+  </div>
+
+  <header>
+    <span class="eyebrow">La Boîte à merveilles · Ahmed Sefrioui · Chapitre I</span>
+    <h1>Dar Chouafa, la maison de la voyante</h1>
+  </header>
+
+  <section aria-labelledby="t-texte">
+    <h2 id="t-texte">Texte</h2>
+    <p class="astuce">Cliquez sur un <b>mot souligné</b> pour voir son explication.</p>
+    <div class="texte" id="texte">
+      <p>Le soir, quand tous dorment, les riches dans leurs chaudes couvertures, les pauvres sur les marches des boutiques ou sous les porches des palais, moi je ne dors pas. Je songe à ma solitude et j’en sens tout le poids. Ma solitude ne date pas d’hier.</p>
+      <p>Je vois, au fond d’une impasse que le soleil ne visite jamais, un petit garçon de six ans, dresser un piège pour attraper un moineau mais le moineau ne vient jamais. Il désire tant ce petit moineau ! Il ne le mangera pas, il ne le martyrisera pas. Il veut en faire son compagnon. Les pieds nus, sur la terre humide, il court jusqu’au bout de la ruelle pour voir passer les ânes et revient s’asseoir sur le pas de la maison et attendre l’arrivée du moineau qui ne vient pas. Le soir, il rentre le cœur gros et les yeux rougis, balançant au bout de son petit bras, un piège en fil de cuivre.</p>
+      <p>Nous habitions Dar Chouafa, la maison de la voyante. Effectivement, au rez-de-chaussée, habitait une voyante de grande réputation. Des quartiers les plus éloignés, des femmes de toutes les conditions venaient la consulter. Elle était voyante et quelque peu sorcière. Adepte de la confrérie des Gnaouas (gens de Guinée) elle s’offrait, une fois par mois, une séance de musique et de danses nègres. Des nuages de benjoin emplissaient la maison et les crotales et les guimbris nous empêchaient de dormir, toute la nuit.</p>
+      <p>Je ne comprenais rien au rituel compliqué qui se déroulait au rez-de-chaussée. De notre fenêtre du deuxième étage, je distinguais à travers la fumée des aromates les silhouettes gesticuler. Elles faisaient tinter leurs instruments bizarres. J’entendais des youyou. Les robes étaient tantôt bleu-ciel, tantôt rouge sang, parfois d’un jaune flamboyant. Les lendemains de ces fêtes étaient des jours mornes, plus tristes et plus gris que les jours ordinaires.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-q">
+    <h2 id="t-q">Questions</h2>
+    <ol class="qs">
+
+      <li class="q">
+        <span class="num">1</span>
+        <div>
+          <p class="enonce">Recopiez et complétez le tableau suivant. <span class="pts">(1 pt)</span></p>
+          <p class="sub">Titre de l’œuvre · Auteur · Genre · Date de parution</p>
+          <details><summary>Correction</summary>
+            <div class="rep">
+              <table class="fiche">
+                <tr><td>Titre de l’œuvre</td><td>La Boîte à merveilles</td></tr>
+                <tr><td>Auteur</td><td>Ahmed Sefrioui</td></tr>
+                <tr><td>Genre</td><td>Roman autobiographique</td></tr>
+                <tr><td>Date de parution</td><td>1954</td></tr>
+              </table>
+            </div>
+          </details>
+        </div>
+      </li>
+
+      <li class="q">
+        <span class="num">2</span>
+        <div>
+          <p class="enonce">Relevez du texte trois mots relatifs à la célébration et trois autres à la superstition.</p>
+          <details><summary>Correction</summary>
+            <div class="rep">
+              <p><strong>Célébration :</strong> musique, danses, youyou (on accepte aussi : fêtes, guimbris, crotales).</p>
+              <p><strong>Superstition :</strong> voyante, sorcière, rituel (on accepte aussi : benjoin, Chouafa).</p>
+            </div>
+          </details>
+        </div>
+      </li>
+
+      <li class="q">
+        <span class="num">3</span>
+        <div>
+          <p class="enonce">Recopiez les énoncés suivants et mettez : Vrai ou Faux.</p>
+          <p class="sub">a. Rares sont les gens qui rendent visite à la voyante.</p>
+          <p class="sub">b. Le narrateur vient de découvrir sa solitude.</p>
+          <p class="sub">c. Les riches comme les pauvres viennent consulter la voyante.</p>
+          <p class="sub">d. Le narrateur distingue à peine les scènes organisées à Dar Chouafa.</p>
+          <details><summary>Correction</summary>
+            <div class="rep">
+              <p>a. <span class="vf">Faux</span> <span class="cite">« Des quartiers les plus éloignés, des femmes de toutes les conditions venaient la consulter. »</span></p>
+              <p>b. <span class="vf">Faux</span> <span class="cite">« Ma solitude ne date pas d’hier. »</span></p>
+              <p>c. <span class="vf">Vrai</span> <span class="cite">« des femmes de toutes les conditions »</span></p>
+              <p>d. <span class="vf">Vrai</span> <span class="cite">« je distinguais à travers la fumée des aromates les silhouettes gesticuler »</span></p>
+            </div>
+          </details>
+        </div>
+      </li>
+
+      <li class="q">
+        <span class="num">4</span>
+        <div>
+          <p class="enonce"><span class="cite">« Le soir, il rentre le cœur gros et les yeux rougis, balançant au bout de son petit bras, un piège en fil de cuivre. »</span></p>
+          <p class="sub">a. Quel sentiment éprouve le narrateur dans cet énoncé ?</p>
+          <p class="sub">b. Justifiez votre réponse.</p>
+          <details><summary>Correction</summary>
+            <div class="rep">
+              <p>a. Le narrateur éprouve de la <strong>tristesse</strong> et de la <strong>déception</strong>.</p>
+              <p>b. Les expressions <span class="cite">« le cœur gros »</span> et <span class="cite">« les yeux rougis »</span> montrent qu’il a pleuré, car le moineau qu’il voulait comme compagnon n’est pas venu.</p>
+            </div>
+          </details>
+        </div>
+      </li>
+
+      <li class="q">
+        <span class="num">5</span>
+        <div>
+          <p class="enonce">Après la relecture du texte : citez deux locataires de cette maison.</p>
+          <details><summary>Correction</summary>
+            <div class="rep">
+              <p>La voyante <strong>Lalla Kenza</strong> (au rez-de-chaussée) et <strong>Rahma</strong>, la femme de Driss el Aouad (au premier étage).</p>
+              <p>On accepte aussi : Driss el Aouad, Zineb, Fatma Bziouya.</p>
+            </div>
+          </details>
+        </div>
+      </li>
+
+      <li class="q">
+        <span class="num">6</span>
+        <div>
+          <p class="enonce">Cherchez les synonymes des mots suivants dans le texte : la renommée – triste.</p>
+          <details><summary>Correction</summary>
+            <div class="rep">
+              <p>La renommée → <strong>la réputation</strong> <span class="cite">(« une voyante de grande réputation »)</span></p>
+              <p>Triste → <strong>morne</strong> <span class="cite">(« des jours mornes »)</span></p>
+            </div>
+          </details>
+        </div>
+      </li>
+
+      <li class="q">
+        <span class="num">7</span>
+        <div>
+          <p class="enonce">Le narrateur souligne la pratique de la superstition. Êtes-vous pour ou contre ces pratiques ? Justifiez votre choix.</p>
+          <details><summary>Correction</summary>
+            <div class="rep">
+              <p>À mon avis, je suis <strong>contre</strong> ces pratiques, car elles profitent de la naïveté des gens et leur font perdre leur argent. De plus, personne ne peut connaître l’avenir.</p>
+            </div>
+          </details>
+        </div>
+      </li>
+
+    </ol>
+  </section>
+</div>
+
+<script>
+(function () {
+  var scale = 1;
+  try { scale = parseFloat(localStorage.getItem("taille")) || 1; } catch (e) {}
+  function apply() {
+    document.documentElement.style.setProperty("--scale", scale);
+    try { localStorage.setItem("taille", scale); } catch (e) {}
+  }
+  apply();
+  document.getElementById("plus").addEventListener("click", function () { scale = Math.min(1.8, +(scale + 0.1).toFixed(2)); apply(); });
+  document.getElementById("moins").addEventListener("click", function () { scale = Math.max(0.7, +(scale - 0.1).toFixed(2)); apply(); });
+
+  var btn = document.getElementById("toutes");
+  var all = document.querySelectorAll("details");
+  function sync() {
+    var open = Array.prototype.every.call(all, function (d) { return d.open; });
+    btn.textContent = open ? "Masquer toutes les corrections" : "Afficher toutes les corrections";
+  }
+  btn.addEventListener("click", function () {
+    var open = !Array.prototype.every.call(all, function (d) { return d.open; });
+    all.forEach(function (d) { d.open = open; });
+    sync();
+  });
+  all.forEach(function (d) { d.addEventListener("toggle", sync); });
+
+  // Mots difficiles : [expression exacte du texte, explication simple, synonyme en arabe]
+  var MOTS = [
+    ["porches", "Entrées couvertes devant une grande maison ou un palais.", "مداخل / أروقة"],
+    ["songe", "Pense, réfléchit longuement.", "أفكّر / أتأمّل"],
+    ["poids", "Ici : la lourdeur, la peine que fait sentir la solitude.", "ثِقل"],
+    ["impasse", "Petite rue fermée au bout, sans sortie.", "زقاق مسدود / درب"],
+    ["piège", "Objet qui sert à attraper un animal.", "فخّ"],
+    ["moineau", "Petit oiseau gris-brun très commun.", "عصفور"],
+    ["martyrisera", "Le fera souffrir, le torturera.", "يُعذّبه"],
+    ["compagnon", "Un ami qui reste toujours avec nous.", "رفيق / صديق"],
+    ["ruelle", "Petite rue étroite.", "زقاق"],
+    ["le cœur gros", "Très triste, plein de chagrin.", "حزين / مهموم"],
+    ["les yeux rougis", "Les yeux rouges parce qu’il a pleuré.", "عينان محمرّتان من البكاء"],
+    ["voyante", "Femme qui prétend deviner l’avenir (la « chouafa »).", "عرّافة / شوّافة"],
+    ["réputation", "Ce que les gens pensent de quelqu’un ; la renommée.", "سُمعة / شُهرة"],
+    ["de toutes les conditions", "De toutes les classes sociales : riches et pauvres.", "من جميع الطبقات"],
+    ["sorcière", "Femme qui pratique la magie.", "ساحرة"],
+    ["Adepte", "Membre fidèle d’un groupe ou d’une croyance.", "مُريد / تابع"],
+    ["confrérie", "Groupe religieux qui suit les mêmes pratiques (comme une zaouïa).", "طريقة / زاوية"],
+    ["benjoin", "Résine parfumée qu’on brûle comme de l’encens.", "الجاوي / بخور"],
+    ["crotales", "Instruments en métal des Gnaouas qu’on frappe l’un contre l’autre.", "قراقب"],
+    ["guimbris", "Guitare traditionnelle des Gnaouas, à trois cordes.", "كَمبري / هجهوج"],
+    ["rituel", "Cérémonie avec des gestes répétés toujours de la même façon.", "طقوس"],
+    ["aromates", "Plantes et encens qui sentent fort quand on les brûle.", "أعشاب عطرية / بخور"],
+    ["gesticuler", "Faire beaucoup de gestes avec les bras.", "يُلوّحون بأيديهم"],
+    ["tinter", "Faire un son clair, comme une petite cloche.", "يرنّ"],
+    ["youyou", "Cris de joie poussés par les femmes pendant les fêtes.", "زغاريد"],
+    ["flamboyant", "Très vif et brillant, comme une flamme.", "متوهّج / لامع"],
+    ["mornes", "Tristes, sans joie, ennuyeux.", "كئيبة / حزينة"]
+  ];
+
+  var texte = document.getElementById("texte");
+  var esc = function (s) { return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); };
+  var html = texte.innerHTML;
+  // jetons temporaires pour ne jamais remplacer à l'intérieur d'un mot déjà traité
+  MOTS.forEach(function (m, i) {
+    var at = html.indexOf(m[0]);
+    if (at < 0) return;
+    html = html.slice(0, at) + "\u0001" + i + "\u0002" + html.slice(at + m[0].length);
+  });
+  html = html.replace(/\u0001(\d+)\u0002/g, function (_, i) {
+    return '<button type="button" class="mot" data-i="' + i + '" aria-haspopup="dialog">' + esc(MOTS[i][0]) + "</button>";
+  });
+  texte.innerHTML = html;
+
+  var bulle = document.createElement("div");
+  bulle.className = "bulle";
+  bulle.setAttribute("role", "dialog");
+  bulle.hidden = true;
+  document.body.appendChild(bulle);
+  var actif = null;
+
+  function fermer() {
+    bulle.hidden = true;
+    if (actif) actif.classList.remove("actif");
+    actif = null;
+  }
+  function ouvrir(b) {
+    var m = MOTS[+b.dataset.i];
+    bulle.innerHTML = '<div class="terme"></div><p class="def"></p><p class="ar" dir="rtl" lang="ar"></p>';
+    bulle.querySelector(".terme").textContent = m[0];
+    bulle.querySelector(".def").textContent = m[1];
+    bulle.querySelector(".ar").textContent = m[2];
+    bulle.hidden = false;
+    if (actif) actif.classList.remove("actif");
+    actif = b;
+    b.classList.add("actif");
+    bulle.style.left = "0px";
+    var r = b.getBoundingClientRect();
+    var w = bulle.offsetWidth;
+    var left = Math.max(16, Math.min(r.left, document.documentElement.clientWidth - w - 16));
+    bulle.style.left = left + window.scrollX + "px";
+    bulle.style.top = r.bottom + window.scrollY + 10 + "px";
+  }
+  texte.addEventListener("click", function (e) {
+    var b = e.target.closest("button.mot");
+    if (!b) return;
+    e.stopPropagation();
+    if (actif === b) fermer(); else ouvrir(b);
+  });
+  document.addEventListener("click", function (e) { if (!bulle.contains(e.target)) fermer(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") fermer(); });
+  window.addEventListener("resize", fermer);
+})();
+</script>
+</body>
+</html>
